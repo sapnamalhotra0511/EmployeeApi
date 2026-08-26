@@ -1,6 +1,8 @@
 using EmployeeApi.Models;
 using EmployeeApi.Services; 
 using Microsoft.AspNetCore.Mvc;
+using EmployeeApi.DTOs;
+
 namespace EmployeeApi.Controllers;
 
 
@@ -24,8 +26,19 @@ public class EmployeesController: ControllerBase
         }
         
         [HttpPost]
-        public ActionResult<Employee> AddEmployee(Employee employee)
+        public ActionResult<Employee> AddEmployee(CreateEmployeeDto employeeDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var employee = new Employee
+            {
+                Name = employeeDto.Name,
+                Position = employeeDto.Position,
+                Salary = employeeDto.Salary
+            };
             var addedEmployee = _employeeService.AddEmployee(employee);
 
             return Ok(addedEmployee);
@@ -45,9 +58,23 @@ public class EmployeesController: ControllerBase
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Employee> UpdateEmployee( int id,Employee employee)
+        public ActionResult<Employee> UpdateEmployee( int id,UpdateEmployeeDto employeeDto )
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var employee = new Employee
+            {
+                Name = employeeDto.Name,
+                Position = employeeDto.Position,
+                Salary = employeeDto.Salary
+            };
+
             var updatedEmployee = _employeeService.UpdateEmployee(id, employee);
+
 
             if (updatedEmployee == null)
             {
