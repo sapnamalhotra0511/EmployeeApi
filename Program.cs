@@ -1,4 +1,7 @@
+    using EmployeeApi.Data;
+    using Microsoft.EntityFrameworkCore;
     using  EmployeeApi.Services;
+    
     var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,11 +9,11 @@
 builder.Services.AddControllers(); 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<EmployeeService>();
-
+builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddDbContext<EmployeeDbContext>(options => options.UseSqlite("Data Source=employees.db"));
 var app = builder.Build();
 app.UseExceptionHandler(errorApp =>
-{
+{   
     errorApp.Run(async context =>
     {
         var logger = context.RequestServices

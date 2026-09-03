@@ -21,8 +21,7 @@ public class EmployeesController: ControllerBase
         [HttpGet]
         public ActionResult<List<Employee>> GetEmployees()
         {
-            //return _employeeService.GetEmployees();
-            throw new Exception("Test exception");
+            return _employeeService.GetEmployees();
 
             
         }
