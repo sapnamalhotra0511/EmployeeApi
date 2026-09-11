@@ -1,6 +1,7 @@
     using EmployeeApi.Data;
     using Microsoft.EntityFrameworkCore;
     using  EmployeeApi.Services;
+    using EmployeeApi.Repositories;
     
     var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddDbContext<EmployeeDbContext>(options => options.UseSqlite("Data Source=employees.db"));
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 var app = builder.Build();
 app.UseExceptionHandler(errorApp =>
 {   

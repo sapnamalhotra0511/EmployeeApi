@@ -2,6 +2,7 @@ using EmployeeApi.Models;
 using EmployeeApi.Services; 
 using Microsoft.AspNetCore.Mvc;
 using EmployeeApi.DTOs;
+using EmployeeApi.Data;
 
 namespace EmployeeApi.Controllers;
 
@@ -19,15 +20,13 @@ public class EmployeesController: ControllerBase
             _employeeService= employeeService;
         }
         [HttpGet]
-        public ActionResult<List<Employee>> GetEmployees()
+        public async Task<ActionResult<List<Employee>>> GetEmployees()
         {
-            return _employeeService.GetEmployees();
-
-            
+            return await _employeeService.GetEmployees();
         }
         
         [HttpPost]
-        public ActionResult<Employee> AddEmployee(CreateEmployeeDto employeeDto)
+        public async Task<ActionResult<Employee>> AddEmployee(CreateEmployeeDto employeeDto)
         {
             if (!ModelState.IsValid)
             {
@@ -40,15 +39,15 @@ public class EmployeesController: ControllerBase
                 Position = employeeDto.Position,
                 Salary = employeeDto.Salary
             };
-            var addedEmployee = _employeeService.AddEmployee(employee);
+            var addedEmployee = await _employeeService.AddEmployee(employee);
 
             return Ok(addedEmployee);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Employee> GetEmployee(int id)
+        public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var employee = _employeeService.GetEmployeeById(id);
+            var employee = await _employeeService.GetEmployeeById(id);
 
             if (employee == null)
             {
@@ -59,7 +58,7 @@ public class EmployeesController: ControllerBase
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Employee> UpdateEmployee( int id,UpdateEmployeeDto employeeDto )
+        public async Task<ActionResult<Employee>> UpdateEmployee( int id,UpdateEmployeeDto employeeDto )
         {
 
             if (!ModelState.IsValid)
@@ -74,7 +73,7 @@ public class EmployeesController: ControllerBase
                 Salary = employeeDto.Salary
             };
 
-            var updatedEmployee = _employeeService.UpdateEmployee(id, employee);
+            var updatedEmployee = await _employeeService.UpdateEmployee(id, employee);
 
 
             if (updatedEmployee == null)
@@ -86,9 +85,9 @@ public class EmployeesController: ControllerBase
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteEmployee(int id)
+        public async Task<ActionResult<bool>> DeleteEmployee(int id)
         {
-            var deleted = _employeeService.DeleteEmployee(id);
+            var deleted = await _employeeService.DeleteEmployee(id);
 
             if (!deleted)
             {

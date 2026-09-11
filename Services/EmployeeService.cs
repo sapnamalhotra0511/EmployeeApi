@@ -1,57 +1,36 @@
-using EmployeeApi.Data;
 using EmployeeApi.Models;
+using EmployeeApi.Repositories;
 
 namespace EmployeeApi.Services;
 
 public class EmployeeService
 {
-    private readonly EmployeeDbContext _context;
-
-    public EmployeeService(EmployeeDbContext context)
+    private readonly IEmployeeRepository _employeeRepository;
+    public EmployeeService(IEmployeeRepository employeeRepository)
     {
-        _context = context;
+        _employeeRepository = employeeRepository;
     }
 
-    public List<Employee> GetEmployees()
+    public async Task<List<Employee>> GetEmployees()
     {
-        return _context.Employees.ToList();
+        return await _employeeRepository.GetEmployees();
     }
-    public Employee AddEmployee(Employee employee)
+    public async Task<Employee> AddEmployee(Employee employee)
     {
-        _context.Employees.Add(employee);
-        _context.SaveChanges();
-
-        return employee;
+        return await _employeeRepository.AddEmployee(employee);
     }
-    public Employee? GetEmployeeById(int id)
+    
+    
+        public async Task<Employee?> GetEmployeeById(int id)
     {
-        return _context.Employees.FirstOrDefault(e => e.Id == id);
+        return await _employeeRepository.GetEmployeeById(id);
     }
-    public Employee? UpdateEmployee(int id, Employee updatedEmployee)
+    public async Task<Employee?> UpdateEmployee(int id, Employee updatedEmployee)
     {
-        var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
-
-        if (employee == null)
-            return null;
-
-        employee.Name = updatedEmployee.Name;
-        employee.Position = updatedEmployee.Position;
-        employee.Salary = updatedEmployee.Salary;
-
-        _context.SaveChanges();
-
-        return employee;
+        return await _employeeRepository.UpdateEmployee(id, updatedEmployee);
     }
-public bool DeleteEmployee(int id)
+    public async Task<bool> DeleteEmployee(int id)
     {
-        var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
-
-        if (employee == null)
-            return false;
-
-        _context.Employees.Remove(employee);
-        _context.SaveChanges();
-
-        return true;
+        return await _employeeRepository.DeleteEmployee(id);
     }
 }
