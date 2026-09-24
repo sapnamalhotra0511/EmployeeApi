@@ -22,7 +22,8 @@ public class EmployeesController: ControllerBase
         [HttpGet]
         public async Task<ActionResult<List<Employee>>> GetEmployees()
         {
-            return await _employeeService.GetEmployees();
+
+             return await _employeeService.GetEmployees();
         }
         
         [HttpPost]

@@ -2,6 +2,7 @@
     using Microsoft.EntityFrameworkCore;
     using  EmployeeApi.Services;
     using EmployeeApi.Repositories;
+    using Microsoft.AspNetCore.Diagnostics;
     
     var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +19,14 @@ app.UseExceptionHandler(errorApp =>
 {   
     errorApp.Run(async context =>
     {
+        var exceptionFeature = context.Features
+        .Get<IExceptionHandlerPathFeature>();
+
+        var exception = exceptionFeature?.Error;
         var logger = context.RequestServices
             .GetRequiredService<ILogger<Program>>();
 
-        logger.LogError("An unexpected error occurred.");
-
+        logger.LogError(exception, "An unexpected error occurred.");
         context.Response.StatusCode = 500;
 
         await context.Response.WriteAsJsonAsync(new
