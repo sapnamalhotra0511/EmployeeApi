@@ -1,8 +1,8 @@
 using EmployeeApi.Models;
 using EmployeeApi.Repositories;
-
+using System.Linq;
 namespace EmployeeApi.Services;
-
+    
 public class EmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
@@ -32,5 +32,14 @@ public class EmployeeService
     public async Task<bool> DeleteEmployee(int id)
     {
         return await _employeeRepository.DeleteEmployee(id);
+    }
+    public async Task<List<Employee>> GetEmployeesByPosition(string position)
+    {
+        var employees = await _employeeRepository.GetEmployees();
+
+        return employees
+            .Where(e => e.Position.Contains(position,
+                StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 }

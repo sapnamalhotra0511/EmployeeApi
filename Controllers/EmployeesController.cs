@@ -19,34 +19,56 @@ public class EmployeesController: ControllerBase
         {
             _employeeService= employeeService;
         }
+       
         [HttpGet]
-        public async Task<ActionResult<List<Employee>>> GetEmployees()
+        public async Task<ActionResult<List<EmployeeResponseDto>>> GetEmployees(
+            [FromQuery] string? position)
         {
+            var employees = string.IsNullOrWhiteSpace(position)
+                ? await _employeeService.GetEmployees()
+                : await _employeeService.GetEmployeesByPosition(position);
 
-             return await _employeeService.GetEmployees();
+            var employeeDtos = employees.Select(employee => new EmployeeResponseDto
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Position = employee.Position,
+                Salary = employee.Salary
+            }).ToList();
+
+            return Ok(employeeDtos);
         }
         
+        
         [HttpPost]
-        public async Task<ActionResult<Employee>> AddEmployee(CreateEmployeeDto employeeDto)
+        public async Task<ActionResult<EmployeeResponseDto>> AddEmployee(
+            CreateEmployeeDto employeeDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var employee = new Employee
             {
                 Name = employeeDto.Name,
                 Position = employeeDto.Position,
                 Salary = employeeDto.Salary
             };
+
             var addedEmployee = await _employeeService.AddEmployee(employee);
 
-            return Ok(addedEmployee);
-        }
+            var employeeResponse = new EmployeeResponseDto
+            {
+                Id = addedEmployee.Id,
+                Name = addedEmployee.Name,
+                Position = addedEmployee.Position,
+                Salary = addedEmployee.Salary
+            };
 
+            return CreatedAtAction(
+                nameof(GetEmployee),
+                new { id = addedEmployee.Id },
+                employeeResponse);
+        }
+       
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public async Task<ActionResult<EmployeeResponseDto>> GetEmployee(int id)
         {
             var employee = await _employeeService.GetEmployeeById(id);
 
@@ -55,18 +77,22 @@ public class EmployeesController: ControllerBase
                 return NotFound();
             }
 
-            return employee;
+            var employeeDto = new EmployeeResponseDto
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Position = employee.Position,
+                Salary = employee.Salary
+            };
+
+            return Ok(employeeDto);
         }
 
+        
         [HttpPut("{id}")]
-        public async Task<ActionResult<Employee>> UpdateEmployee( int id,UpdateEmployeeDto employeeDto )
+        public async Task<ActionResult<EmployeeResponseDto>> UpdateEmployee(
+            int id, UpdateEmployeeDto employeeDto)
         {
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var employee = new Employee
             {
                 Name = employeeDto.Name,
@@ -76,17 +102,24 @@ public class EmployeesController: ControllerBase
 
             var updatedEmployee = await _employeeService.UpdateEmployee(id, employee);
 
-
             if (updatedEmployee == null)
             {
                 return NotFound();
             }
 
-            return updatedEmployee;
+            var responseDto = new EmployeeResponseDto
+            {
+                Id = updatedEmployee.Id,
+                Name = updatedEmployee.Name,
+                Position = updatedEmployee.Position,
+                Salary = updatedEmployee.Salary
+            };
+
+            return Ok(responseDto);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> DeleteEmployee(int id)
+        public async Task<IActionResult> DeleteEmployee(int id)
         {
             var deleted = await _employeeService.DeleteEmployee(id);
 
