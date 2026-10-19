@@ -2,4 +2,5 @@ bin/
 obj/
 .vscode/
 *.user
-*.suogit rm -r --cached obj
+*.suo
+employees.db
